@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class EmployeeController {
 
-    @GetMapping(path = "customer")
-    public Employee getCustomer(){
+    @GetMapping(path = "employee")
+    public Employee getEmployee(){
         return Employee.EmployeeBuilder.anEmployee()
                 .city("Basel")
                 .email("gabriel.brodmann@youengineering.ch")

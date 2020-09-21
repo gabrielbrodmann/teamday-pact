@@ -1,0 +1,6 @@
+server:
+  port: 8081
+  max-http-header-size: 5MB
+
+pactbroker:
+  host: localhost:9292

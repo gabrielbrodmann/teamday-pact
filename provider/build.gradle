@@ -1,7 +1,9 @@
 plugins {
-	id 'org.springframework.boot' version '2.3.4.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-	id 'java'
+    id 'java'
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'au.com.dius.pact' version '4.1.7'
+    id 'com.wiredforcode.spawn' version '0.8.2'
 }
 
 group = 'ch.youengineering.teamday.pact'
@@ -9,16 +11,49 @@ version = '0.0.2'
 sourceCompatibility = '11'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+}
+
+task startProvider(type: SpawnProcessTask, dependsOn: 'assemble') {
+    command "java -Dserver.port=8082 -jar ${jar.getArchiveFile().get()}"
+    ready 'Started ProviderApplication'
+}
+
+task stopProvider(type: KillProcessTask) {
+}
+
+allprojects {
+    test {
+        systemProperty 'pact.verifier.publishResults', true
+    }
+}
+
+pact {
+    broker {
+        pactBrokerUrl = 'http://localhost:9292'
+        pactBrokerUsername = ''
+        pactBrokerPassword = ''
+    }
+    serviceProviders {
+        EmployeeProvider {
+            protocol = 'http'
+            port = '8082'
+            startProviderTask = startProvider
+            terminateProviderTask = stopProvider
+            fromPactBroker {
+            }
+        }
+    }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'au.com.dius.pact.provider:junit5:4.1.7'
+    testImplementation 'au.com.dius.pact.provider:junit5spring:4.1.7'
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
+    systemProperties System.properties
 }
