@@ -13,6 +13,6 @@ public class EmployeeClient {
     }
 
     public GreetedEmployee getEmployeeToGreet() {
-        return restTemplateBuilder.build().getForEntity("http://localhost:8081/customer", GreetedEmployee.class).getBody();
+        return restTemplateBuilder.build().getForEntity("http://localhost:8081/employee", GreetedEmployee.class).getBody();
     }
 }
